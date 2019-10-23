@@ -88,7 +88,7 @@ pry(main)> dmns.add_exhibit(dead_sea_scrolls)
 pry(main)> dmns.add_exhibit(imax)
 
 pry(main)> dmns.exhibits
-# => [#<Exhibit:0x00007fb400bbcdd8...>, #<Exhibit:0x00007fb400b851f8...>]
+# => [#<Exhibit:0x00007fb400bbcdd8...>, #<Exhibit:0x00007fb400b851f8...>, #<Exhibit:0x00007fb400acc590...>]
 
 pry(main)> bob = Patron.new("Bob", 20)    
 # => #<Patron:0x00007fb400a51cc8...>
