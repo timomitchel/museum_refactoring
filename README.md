@@ -1,5 +1,35 @@
 # Museum
 
+## Spec Harness Instructions (For Instructors)
+
+In order to run the spec harness, first create a directory with a `students.txt` file.
+
+In `students.txt`, put a list of your students Github handles.  For example:
+
+```
+aziobrow
+dionew1
+memcmahon
+s-espinosa
+```
+
+From the command line, run the following script, replacing `<repository_name` with the name of the challenge repo:
+
+```
+for i in `cat students.txt`; do
+  git clone git@github.com:$i/<repository_name> $i
+  cd $i
+  git pull origin spec # this will cause a merge commit message
+  rspec
+  echo
+  echo
+  read -p 'Press Enter to continue'
+  cd ..
+done
+```
+
+For each student, you will need to create or `:q` out of a merge commit message!
+
 ## Instructions
 
 * Fork this Repository
