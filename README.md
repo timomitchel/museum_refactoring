@@ -112,9 +112,10 @@ pry(main)> dmns.recommend_exhibits(patron_2)
 
 ## Iteration 3
 
-Use TDD to update your `Museum` class so that it responds to the following interaction pattern.
-For `patrons_by_exhibit_interest`, this method takes no arguments and returns a Hash where each key is an Exhibit. The value associated with that Exhibit is an Array of all the Patrons that have an interest in that exhibit. *`ticket_lottery_contestants` returns an array of patrons that do not have enough money to see an exhibit, but are interested in that exhibit. The lottery winner is generated randomly based on the available contestants when `draw_lottery_winner` is called.
-You will need to use a stub to test the `announce_lottery_winner` method in conjunction with the `draw_lottery_winner` method. JOY!
+- Use TDD to update your `Museum` class so that it responds to the following interaction pattern.
+- For `patrons_by_exhibit_interest`, this method takes no arguments and returns a Hash where each key is an Exhibit. The value associated with that Exhibit is an Array of all the Patrons that have an interest in that exhibit.
+- `ticket_lottery_contestants` returns an array of patrons that do not have enough money to see an exhibit, but are interested in that exhibit. The lottery winner is generated randomly based on the available contestants when `draw_lottery_winner` is called.
+- You will need to use a stub to test the `announce_lottery_winner` method in conjunction with the `draw_lottery_winner` method. JOY!
 
 ```ruby
 pry(main)> require './lib/museum'
@@ -195,6 +196,11 @@ pry(main)> dmns.announce_lottery_winner(imax)
 # => "Bob has won the IMAX edhibit lottery"
 
 # The above string should match exactly, you will need to stub the return of `draw_lottery_winner` as the above method should depend on the return value of `draw_lottery_winner`.
+
+pry(main)> dmns.announce_lottery_winner(gems_and_minerals)
+# => "No winners for this lottery"
+
+# If there are no contestants, there are no winners.
 ```
 
 ## Iteration 4

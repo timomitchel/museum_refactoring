@@ -70,6 +70,9 @@ class Museum
   end
 
   def announce_lottery_winner(exhibit)
+    default = "No winners for this lottery"
+    no_contestants = "No contestants for this lottery"
+    return default if draw_lottery_winner(exhibit) == no_contestants
     "#{draw_lottery_winner(exhibit)} has won the #{exhibit.name} exhibit lottery"
   end
 

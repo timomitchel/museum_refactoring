@@ -94,6 +94,7 @@ class MuseumTest < Minitest::Test
 
     assert_includes ["Gabe", "TJ"], @dmns.draw_lottery_winner(@imax)
     assert_equal "No contestants for this lottery", @dmns.draw_lottery_winner(@gems_and_minerals)
+    assert_equal "No winners for this lottery", @dmns.announce_lottery_winner(@gems_and_minerals)
   end
 
   def test_it_can_announce_lottery_winner
