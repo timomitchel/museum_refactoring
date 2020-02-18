@@ -80,7 +80,6 @@ class MuseumTest < Minitest::Test
   def test_it_can_find_lottery_contestants
     @dmns.admit(@tj)
     @dmns.admit(@gabe)
-    @dmns.admit(@sally)
     @dmns.admit(@morgan)
     assert_equal [@tj, @gabe], @dmns.ticket_lottery_contestants(@imax)
     assert_equal [], @dmns.ticket_lottery_contestants(@gems_and_minerals)
@@ -89,18 +88,15 @@ class MuseumTest < Minitest::Test
   def test_it_can_draw_lottery_winner
     @dmns.admit(@tj)
     @dmns.admit(@gabe)
-    @dmns.admit(@sally)
     @dmns.admit(@morgan)
 
     assert_includes ["Gabe", "TJ"], @dmns.draw_lottery_winner(@imax)
-    assert_equal "No contestants for this lottery", @dmns.draw_lottery_winner(@gems_and_minerals)
     assert_equal "No winners for this lottery", @dmns.announce_lottery_winner(@gems_and_minerals)
   end
 
   def test_it_can_announce_lottery_winner
     @dmns.admit(@tj)
     @dmns.admit(@gabe)
-    @dmns.admit(@sally)
     @dmns.admit(@morgan)
 
     @dmns.stubs(:draw_lottery_winner).returns("TJ")

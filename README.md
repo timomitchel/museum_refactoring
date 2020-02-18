@@ -175,6 +175,8 @@ pry(main)> dmns.admit(patron_3)
 pry(main)> dmns.patrons
 # => [#<Patron:0x00007fb2011455b8...>, #<Patron:0x00007fb20227f8b0...>, #<Patron:0x6666fb20114megan...>]
 
+#Patrons are added even if they don't have enough money for all/any exhibits.
+
 pry(main)> dmns.patrons_by_exhibit_interest
 # =>
 # {
@@ -190,9 +192,9 @@ pry(main)> dmns.draw_lottery_winner(dead_sea_scrolls)
 # => "Johnny" or "Bob" can be returned here. Fun!
 
 pry(main)> dmns.draw_lottery_winner(gems_and_minerals)
-# => "No contestants for this lottery"
+# => nil
 
-#If no contestants are elgible for the lottery, the above is returned.
+#If no contestants are elgible for the lottery, nil is returned.
 
 pry(main)> dmns.announce_lottery_winner(imax)
 # => "Bob has won the IMAX edhibit lottery"
