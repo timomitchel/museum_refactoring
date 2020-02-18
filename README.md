@@ -197,7 +197,7 @@ pry(main)> dmns.draw_lottery_winner(gems_and_minerals)
 pry(main)> dmns.announce_lottery_winner(imax)
 # => "Bob has won the IMAX edhibit lottery"
 
-# The above string should match exactly, you will need to **stub** the return of `draw_lottery_winner` as the above method should depend on the return value of `draw_lottery_winner`.
+# The above string should match exactly, you will need to **`stub`** the return of `draw_lottery_winner` as the above method should depend on the return value of `draw_lottery_winner`.
 
 pry(main)> dmns.announce_lottery_winner(gems_and_minerals)
 # => "No winners for this lottery"
