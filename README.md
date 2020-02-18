@@ -152,6 +152,8 @@ pry(main)> patron_1 = Patron.new("Bob", 0)
 # => #<Patron:0x00007fb2011455b8...>
 
 pry(main)> patron_1.add_interest("Gems and Minerals")
+
+pry(main)>
 patron_1.add_interest("Dead Sea Scrolls")
 
 pry(main)> patron_2 = Patron.new("Sally", 20)
