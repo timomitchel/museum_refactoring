@@ -1,215 +1,171 @@
 require 'minitest/autorun'
 require 'minitest/pride'
+require 'mocha/minitest'
 require './lib/museum'
 require './lib/patron'
 require './lib/exhibit'
 
 class MuseumTest < Minitest::Test
+
+  def setup
+    @bob = Patron.new("Bob", 20)
+    @sally = Patron.new("Sally", 20)
+    @tj = Patron.new("TJ", 7)
+    @gabe = Patron.new("Gabe", 10)
+    @morgan = Patron.new("Morgan", 15)
+    @gems_and_minerals = Exhibit.new({name: "Gems and Minerals", cost: 0})
+    @dead_sea_scrolls = Exhibit.new({name: "Dead Sea Scrolls", cost: 10})
+    @imax = Exhibit.new({name: "IMAX",cost: 15})
+    @dmns = Museum.new("Denver Museum of Nature and Science")
+
+    @dmns.add_exhibit(@gems_and_minerals)
+    @dmns.add_exhibit(@imax)
+    @dmns.add_exhibit(@dead_sea_scrolls)
+    @bob.add_interest("Dead Sea Scrolls")
+    @bob.add_interest("Gems and Minerals")
+    @sally.add_interest("Dead Sea Scrolls")
+    @sally.add_interest("IMAX")
+    @tj.add_interest("IMAX")
+    @tj.add_interest("Dead Sea Scrolls")
+    @gabe.add_interest("Dead Sea Scrolls")
+    @gabe.add_interest("IMAX")
+    @morgan.add_interest("Gems and Minerals")
+    @morgan.add_interest("Dead Sea Scrolls")
+  end
+
   def test_it_exists
-    dmns = Museum.new("Denver Museum of Nature and Science")
-    assert_instance_of Museum, dmns
+    assert_instance_of Museum, @dmns
   end
 
   def test_it_has_a_name
-    dmns = Museum.new("Denver Museum of Nature and Science")
-    assert_equal "Denver Museum of Nature and Science", dmns.name
+    assert_equal "Denver Museum of Nature and Science", @dmns.name
   end
 
   def test_it_starts_with_no_exhibits
-    dmns = Museum.new("Denver Museum of Nature and Science")
-    assert_equal [], dmns.exhibits
+    denver_art = Museum.new("Denver Art Museum")
+    assert_equal [], denver_art.exhibits
   end
 
   def test_it_can_add_exhibits
-    dmns = Museum.new("Denver Museum of Nature and Science")
-    gems_and_minerals = Exhibit.new("Gems and Minerals", 0)
-    dead_sea_scrolls = Exhibit.new("Dead Sea Scrolls", 10)
-    dmns.add_exhibit(gems_and_minerals)
-    dmns.add_exhibit(dead_sea_scrolls)
-    assert_equal [gems_and_minerals, dead_sea_scrolls], dmns.exhibits
+    assert_equal [@gems_and_minerals, @imax, @dead_sea_scrolls], @dmns.exhibits
   end
 
   def test_it_can_return_a_list_of_exhibits_a_patron_should_attend
-    dmns = Museum.new("Denver Museum of Nature and Science")
-    gems_and_minerals = Exhibit.new("Gems and Minerals", 0)
-    dead_sea_scrolls = Exhibit.new("Dead Sea Scrolls", 10)
-    imax = Exhibit.new("IMAX", 15)
-    dmns.add_exhibit(gems_and_minerals)
-    dmns.add_exhibit(dead_sea_scrolls)
-    dmns.add_exhibit(imax)
-    bob = Patron.new("Bob", 20)
-    bob.add_interest("Dead Sea Scrolls")
-    bob.add_interest("Gems and Minerals")
-    assert_equal [gems_and_minerals, dead_sea_scrolls], dmns.recommend_exhibits(bob)
+    assert_equal [@gems_and_minerals, @dead_sea_scrolls], @dmns.recommend_exhibits(@bob)
   end
 
   def test_it_starts_with_no_patrons
-    dmns = Museum.new("Denver Museum of Nature and Science")
-    assert_equal [], dmns.patrons
+    denver_art = Museum.new("Denver Art Museum")
+    assert_equal [], denver_art.patrons
   end
 
   def test_it_can_admit_patrons
-    dmns = Museum.new("Denver Museum of Nature and Science")
-    bob = Patron.new("Bob", 20)
-    sally = Patron.new("Sally", 20)
-    dmns.admit(bob)
-    dmns.admit(sally)
-    assert_equal [bob, sally], dmns.patrons
+    @dmns.admit(@bob)
+    @dmns.admit(@sally)
+    assert_equal [@bob, @sally], @dmns.patrons
   end
 
   def test_it_can_return_patrons_by_exhibit_interest
-    dmns = Museum.new("Denver Museum of Nature and Science")
-    gems_and_minerals = Exhibit.new("Gems and Minerals", 0)
-    dead_sea_scrolls = Exhibit.new("Dead Sea Scrolls", 10)
-    imax = Exhibit.new("IMAX", 15)
-    dmns.add_exhibit(gems_and_minerals)
-    dmns.add_exhibit(dead_sea_scrolls)
-    dmns.add_exhibit(imax)
-    bob = Patron.new("Bob", 20)
-    bob.add_interest("Dead Sea Scrolls")
-    bob.add_interest("Gems and Minerals")
-    sally = Patron.new("Sally", 20)
-    sally.add_interest("Dead Sea Scrolls")
-
-    dmns.admit(bob)
-    dmns.admit(sally)
+    @dmns.admit(@bob)
+    @dmns.admit(@sally)
 
     expected = {
-      gems_and_minerals => [bob],
-      dead_sea_scrolls => [bob, sally],
-      imax => []
+      @gems_and_minerals => [@bob],
+      @dead_sea_scrolls => [@bob, @sally],
+      @imax => [@sally]
     }
-    assert_equal expected, dmns.patrons_by_exhibit_interest
+    assert_equal expected, @dmns.patrons_by_exhibit_interest
+  end
+
+  def test_it_can_find_lottery_contestants
+    @dmns.admit(@tj)
+    @dmns.admit(@gabe)
+    @dmns.admit(@sally)
+    @dmns.admit(@morgan)
+    assert_equal [@tj, @gabe], @dmns.ticket_lottery_contestants(@imax)
+    assert_equal [], @dmns.ticket_lottery_contestants(@gems_and_minerals)
+  end
+
+  def test_it_can_draw_lottery_winner
+    @dmns.admit(@tj)
+    @dmns.admit(@gabe)
+    @dmns.admit(@sally)
+    @dmns.admit(@morgan)
+
+    assert_includes ["Gabe", "TJ"], @dmns.draw_lottery_winner(@imax)
+    assert_equal "No contestants for this lottery", @dmns.draw_lottery_winner(@gems_and_minerals)
+  end
+
+  def test_it_can_announce_lottery_winner
+    @dmns.admit(@tj)
+    @dmns.admit(@gabe)
+    @dmns.admit(@sally)
+    @dmns.admit(@morgan)
+
+    @dmns.stubs(:draw_lottery_winner).returns("TJ")
+    assert_equal "TJ has won the IMAX exhibit lottery", @dmns.announce_lottery_winner(@imax)
   end
 
   def test_it_can_sort_exhibits_by_cost_that_match_a_patrons_interests
-    dmns = Museum.new("Denver Museum of Nature and Science")
-    gems_and_minerals = Exhibit.new("Gems and Minerals", 0)
-    imax = Exhibit.new("IMAX", 15)
-    dead_sea_scrolls = Exhibit.new("Dead Sea Scrolls", 10)
-    dmns.add_exhibit(gems_and_minerals)
-    dmns.add_exhibit(imax)
-    dmns.add_exhibit(dead_sea_scrolls)
-    tj = Patron.new("TJ", 7)
-    tj.add_interest("IMAX")
-    tj.add_interest("Dead Sea Scrolls")
-    dmns.admit(tj)
+    @dmns.admit(@tj)
 
-    assert_equal [imax, dead_sea_scrolls], dmns.recommend_exhibits_by_cost(tj)
+    assert_equal [@imax, @dead_sea_scrolls], @dmns.recommend_exhibits_by_cost(@tj)
   end
 
   def test_it_can_admit_patrons_using_spending_money
-    dmns = Museum.new("Denver Museum of Nature and Science")
-    gems_and_minerals = Exhibit.new("Gems and Minerals", 0)
-    imax = Exhibit.new("IMAX", 15)
-    dead_sea_scrolls = Exhibit.new("Dead Sea Scrolls", 10)
-    dmns.add_exhibit(gems_and_minerals)
-    dmns.add_exhibit(imax)
-    dmns.add_exhibit(dead_sea_scrolls)
 
     # Interested in two exhibits but none in price range
-    tj = Patron.new("TJ", 7)
-    tj.add_interest("IMAX")
-    tj.add_interest("Dead Sea Scrolls")
-    dmns.admit(tj)
+    @dmns.admit(@tj)
 
     # Interested in two exhibits and only one is in price range
-    bob = Patron.new("Bob", 10)
-    bob.add_interest("Dead Sea Scrolls")
-    bob.add_interest("IMAX")
-    dmns.admit(bob)
+    @dmns.admit(@gabe)
 
     # Interested in two exhibits and both are in price range, but can only afford one
-    sally = Patron.new("Sally", 20)
-    sally.add_interest("IMAX")
-    sally.add_interest("Dead Sea Scrolls")
-    dmns.admit(sally)
+    @dmns.admit(@sally)
 
     # Interested in two exhibits and both are in price range, and can afford both
-    morgan = Patron.new("Morgan", 15)
-    morgan.add_interest("Gems and Minerals")
-    morgan.add_interest("Dead Sea Scrolls")
-    dmns.admit(morgan)
+    @dmns.admit(@morgan)
 
     expected = {
-      gems_and_minerals => [morgan],
-      imax => [sally],
-      dead_sea_scrolls => [bob, morgan]
+      @gems_and_minerals => [@morgan],
+      @imax => [@sally],
+      @dead_sea_scrolls => [@gabe, @morgan]
     }
-    assert_equal expected, dmns.patrons_of_exhibits
+    assert_equal expected, @dmns.patrons_of_exhibits
   end
 
   def test_patron_spending_money_is_reduced_after_being_admitted
-    dmns = Museum.new("Denver Museum of Nature and Science")
-    gems_and_minerals = Exhibit.new("Gems and Minerals", 0)
-    imax = Exhibit.new("IMAX", 15)
-    dead_sea_scrolls = Exhibit.new("Dead Sea Scrolls", 10)
-    dmns.add_exhibit(gems_and_minerals)
-    dmns.add_exhibit(imax)
-    dmns.add_exhibit(dead_sea_scrolls)
 
     # Interested in two exhibits but none in price range
-    tj = Patron.new("TJ", 7)
-    tj.add_interest("IMAX")
-    tj.add_interest("Dead Sea Scrolls")
-    dmns.admit(tj)
-    assert_equal 7, tj.spending_money
+    @dmns.admit(@tj)
+    assert_equal 7, @tj.spending_money
 
     # Interested in two exhibits and only one is in price range
-    bob = Patron.new("Bob", 10)
-    bob.add_interest("Dead Sea Scrolls")
-    bob.add_interest("IMAX")
-    dmns.admit(bob)
-    assert_equal 0, bob.spending_money
+    @dmns.admit(@gabe)
+    assert_equal 0, @gabe.spending_money
 
     # Interested in two exhibits and both are in price range, but can only afford one
-    sally = Patron.new("Sally", 20)
-    sally.add_interest("IMAX")
-    sally.add_interest("Dead Sea Scrolls")
-    dmns.admit(sally)
-    assert_equal 5, sally.spending_money
+    @dmns.admit(@sally)
+    assert_equal 5, @sally.spending_money
 
     # Interested in two exhibits and both are in price range, and can afford both
-    morgan = Patron.new("Morgan", 15)
-    morgan.add_interest("Gems and Minerals")
-    morgan.add_interest("Dead Sea Scrolls")
-    dmns.admit(morgan)
-    assert_equal 5, morgan.spending_money
+    @dmns.admit(@morgan)
+    assert_equal 5, @morgan.spending_money
   end
 
   def test_it_can_calculate_revenue
-    dmns = Museum.new("Denver Museum of Nature and Science")
-    gems_and_minerals = Exhibit.new("Gems and Minerals", 0)
-    imax = Exhibit.new("IMAX", 15)
-    dead_sea_scrolls = Exhibit.new("Dead Sea Scrolls", 10)
-    dmns.add_exhibit(gems_and_minerals)
-    dmns.add_exhibit(imax)
-    dmns.add_exhibit(dead_sea_scrolls)
-
     # Interested in two exhibits but none in price range
-    tj = Patron.new("TJ", 7)
-    tj.add_interest("IMAX")
-    tj.add_interest("Dead Sea Scrolls")
-    dmns.admit(tj)
+    @dmns.admit(@tj)
 
     # Interested in two exhibits and only one is in price range
-    bob = Patron.new("Bob", 10)
-    bob.add_interest("Dead Sea Scrolls")
-    bob.add_interest("IMAX")
-    dmns.admit(bob)
+    @dmns.admit(@gabe)
 
     # Interested in two exhibits and both are in price range, but can only afford one
-    sally = Patron.new("Sally", 20)
-    sally.add_interest("IMAX")
-    sally.add_interest("Dead Sea Scrolls")
-    dmns.admit(sally)
+    @dmns.admit(@sally)
 
     # Interested in two exhibits and both are in price range, and can afford both
-    morgan = Patron.new("Morgan", 15)
-    morgan.add_interest("Gems and Minerals")
-    morgan.add_interest("Dead Sea Scrolls")
-    dmns.admit(morgan)
+    @dmns.admit(@morgan)
 
-    assert_equal 35, dmns.revenue
+    assert_equal 35, @dmns.revenue
   end
 end
