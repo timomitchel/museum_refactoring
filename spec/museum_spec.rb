@@ -1,5 +1,4 @@
 require 'rspec'
-require 'pry'
 require 'simplecov'
 SimpleCov.start
 require './lib/exhibit'
@@ -24,39 +23,21 @@ RSpec.describe 'museum spec' do
     it '1. Exhibit ::new' do
       expect(Exhibit).to respond_to(:new).with(2).argument
       expect(@dead_sea_scrolls).to be_an_instance_of(Exhibit)
-    end
-
-    it '2. Exhibit #name' do
       expect(@dead_sea_scrolls).to respond_to(:name).with(0).argument
       expect(@dead_sea_scrolls.name).to eq('Dead Sea Scrolls')
-    end
-
-    it '3. Exhibit #cost' do
       expect(@dead_sea_scrolls).to respond_to(:cost).with(0).argument
       expect(@dead_sea_scrolls.cost).to eq(0)
-    end
-
-    it '4. Patron ::new' do
       expect(Patron).to respond_to(:new).with(2).argument
       expect(@bob).to be_an_instance_of(Patron)
-    end
-
-    it '5. Patron #name' do
       expect(@bob).to respond_to(:name).with(0).argument
       expect(@bob.name).to eq('Bob')
-    end
-
-    it '6. Patron #spending_money' do
       expect(@bob).to respond_to(:spending_money).with(0).argument
       expect(@bob.spending_money).to eq(20)
-    end
-
-    it '7. Patron #interests' do
       expect(@bob).to respond_to(:interests).with(0).argument
       expect(@bob.interests).to eq([])
     end
 
-    it '8. Patron #add_interest' do
+    it '2. Patron #add_interest' do
       expect(@bob).to respond_to(:add_interest).with(1).argument
       @bob.add_interest("Dead Sea Scrolls")
       @bob.add_interest("Gems and Minerals")
@@ -74,26 +55,20 @@ RSpec.describe 'museum spec' do
     it '1. Museum ::new' do
       expect(Museum).to respond_to(:new).with(1).argument
       expect(@dmns).to be_an_instance_of(Museum)
-    end
-
-    it '2. Museum #name' do
       expect(@dmns).to respond_to(:name).with(0).argument
       expect(@dmns.name).to eq('Denver Museum of Nature and Science')
-    end
-
-    it '3. Museum #exhibits' do
       expect(@dmns).to respond_to(:exhibits).with(0).argument
       expect(@dmns.exhibits).to eq([])
     end
 
-    it '4. Museum #add_exhibit' do
+    it '2. Museum #add_exhibit' do
       expect(@dmns).to respond_to(:add_exhibit).with(1).argument
       @dmns.add_exhibit(@dead_sea_scrolls)
       @dmns.add_exhibit(@gems_and_minerals)
       expect(@dmns.exhibits).to eq([@dead_sea_scrolls, @gems_and_minerals])
     end
 
-    it '5. Museum #recommend_exhibits' do
+    it '3. Museum #recommend_exhibits' do
       @dmns.add_exhibit(@dead_sea_scrolls)
       @dmns.add_exhibit(@gems_and_minerals)
       @dmns.add_exhibit(@imax)
@@ -136,6 +111,10 @@ RSpec.describe 'museum spec' do
       expect(@dmns).to respond_to(:patrons_by_exhibit_interest).with(0).argument
       expect(@dmns.patrons_by_exhibit_interest).to eq(expected)
     end
+
+      it '4. Museum #ticket_lottery_contestants' do
+
+      end
   end
 
   describe 'Iteration 4' do
