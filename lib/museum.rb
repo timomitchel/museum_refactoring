@@ -54,6 +54,29 @@ class Museum
     exhibit_interest
   end
 
+  def ticket_lottery_contestants(exhibit)
+    lottery_patrons = patrons_by_exhibit_interest[exhibit]
+    lottery_patrons.find_all do |patron|
+      patron.spending_money < exhibit.cost
+    end
+  end
+
+  def draw_lottery_winner(exhibit)
+    contestants = ticket_lottery_contestants(exhibit)
+    #return nil if no contestants
+    return nil if contestants.empty?
+    winner = contestants.sample
+    winner.name
+  end
+
+  def announce_lottery_winner(exhibit)
+    result = draw_lottery_winner(exhibit)
+    default = "No winners for this lottery"
+    return default if result.nil?
+    "#{result} has won the #{exhibit.name} exhibit lottery"
+  end
+
+
   def revenue
     total = 0
     patrons_of_exhibits.each do |exhibit, patrons|
