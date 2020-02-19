@@ -11,9 +11,9 @@ end
 
 RSpec.describe 'museum spec' do
   before :each do
-    @dead_sea_scrolls = Exhibit.new("Dead Sea Scrolls", 0)
-    @gems_and_minerals = Exhibit.new("Gems and Minerals", 0)
-    @imax = Exhibit.new("IMAX", 15)
+    @dead_sea_scrolls = Exhibit.new({name: "Dead Sea Scrolls", cost: 0})
+    @gems_and_minerals = Exhibit.new({name: "Gems and Minerals", cost: 0})
+    @imax = Exhibit.new({name: "IMAX", cost: 15})
     @bob = Patron.new("Bob", 20)
     @sally = Patron.new("Sally", 20)
     @dmns = Museum.new("Denver Museum of Nature and Science")
@@ -21,7 +21,7 @@ RSpec.describe 'museum spec' do
 
   describe 'Iteration 1' do
     it '1. Exhibit ::new' do
-      expect(Exhibit).to respond_to(:new).with(2).argument
+      expect(Exhibit).to respond_to(:new).with(1).argument
       expect(@dead_sea_scrolls).to be_an_instance_of(Exhibit)
       expect(@dead_sea_scrolls).to respond_to(:name).with(0).argument
       expect(@dead_sea_scrolls.name).to eq('Dead Sea Scrolls')
@@ -80,9 +80,19 @@ RSpec.describe 'museum spec' do
 
   describe 'Iteration 3' do
     before :each do
+      @imax_2 = Exhibit.new({name: "IMAX2",cost: 15})
       @dmns.add_exhibit(@dead_sea_scrolls)
       @dmns.add_exhibit(@gems_and_minerals)
       @dmns.add_exhibit(@imax)
+      @tj = Patron.new("TJ", 7)
+      @gabe = Patron.new("Gabe", 10)
+      @morgan = Patron.new("Morgan", 15)
+      @tj.add_interest("IMAX")
+      @tj.add_interest("Dead Sea Scrolls")
+      @gabe.add_interest("Dead Sea Scrolls")
+      @gabe.add_interest("IMAX")
+      @morgan.add_interest("Gems and Minerals")
+      @morgan.add_interest("Dead Sea Scrolls")
       @bob.add_interest("Dead Sea Scrolls")
       @bob.add_interest("Gems and Minerals")
       @sally.add_interest("Dead Sea Scrolls")
@@ -113,16 +123,50 @@ RSpec.describe 'museum spec' do
     end
 
       it '4. Museum #ticket_lottery_contestants' do
+        @dmns.add_exhibit(@imax_2)
+        @tj.add_interest("IMAX2")
+        @gabe.add_interest("IMAX2")
+        @dmns.admit(@tj)
+        @dmns.admit(@gabe)
+        @dmns.admit(@morgan)
 
+        expected = [@tj, @gabe]
+        expect(@dmns).to respond_to(:ticket_lottery_contestants).with(1).argument
+        expect(@dmns.ticket_lottery_contestants(@imax_2)).to eq(expected)
+      end
+
+      it '5. Museum #draw_lottery_winner' do
+        @dmns.add_exhibit(@imax_2)
+        @tj.add_interest("IMAX2")
+        @gabe.add_interest("IMAX2")
+        @dmns.admit(@tj)
+        @dmns.admit(@gabe)
+        @dmns.admit(@morgan)
+
+        expect(@dmns).to respond_to(:draw_lottery_winner).with(1).argument
+        expect(@dmns.draw_lottery_winner(@imax_2)).to eq("TJ").or(eq("Gabe"))
+      end
+
+      it '6. Museum #announce_lottery_winner' do
+        @dmns.add_exhibit(@imax_2)
+        @tj.add_interest("IMAX2")
+        @gabe.add_interest("IMAX2")
+        @dmns.admit(@tj)
+        @dmns.admit(@gabe)
+        @dmns.admit(@morgan)
+        @dmns.stub(:draw_lottery_winner) { 'Gabe' }
+        expected = "Gabe has won the IMAX2 exhibit lottery"
+        expect(@dmns).to respond_to(:announce_lottery_winner).with(1).argument
+        expect(@dmns.announce_lottery_winner(@imax_2)).to eq(expected)
       end
   end
 
   describe 'Iteration 4' do
     before :each do
       @dmns = Museum.new("Denver Museum of Nature and Science")
-      @gems_and_minerals = Exhibit.new("Gems and Minerals", 0)
-      @imax = Exhibit.new("IMAX", 15)
-      @dead_sea_scrolls = Exhibit.new("Dead Sea Scrolls", 10)
+      @gems_and_minerals = Exhibit.new({name: "Gems and Minerals",cost: 0})
+      @imax = Exhibit.new({name: "IMAX", cost: 15})
+      @dead_sea_scrolls = Exhibit.new({name: "Dead Sea Scrolls",cost:  10})
       @dmns.add_exhibit(@gems_and_minerals)
       @dmns.add_exhibit(@imax)
       @dmns.add_exhibit(@dead_sea_scrolls)
