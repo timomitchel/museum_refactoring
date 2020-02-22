@@ -59,6 +59,12 @@ class MuseumTest < Minitest::Test
     assert_equal [], denver_art.patrons
   end
 
+  def test_add_patron
+    assert_equal [], @dmns.patrons
+    @dmns.add_patron(@bob)
+    assert_equal [@bob], @dmns.patrons
+  end
+
   def test_it_can_admit_patrons
     @dmns.admit(@bob)
     @dmns.admit(@sally)
@@ -164,5 +170,32 @@ class MuseumTest < Minitest::Test
     @dmns.admit(@morgan)
 
     assert_equal 35, @dmns.revenue
+  end
+
+  def test_can_afford_exhibit
+    @tj.stubs(:spending_money).returns(0)
+    @gems_and_minerals.stubs(:cost).returns(0)
+    @imax.stubs(:cost).returns(10)
+
+    assert_equal true, @dmns.can_afford_exhibit?(@gems_and_minerals, @tj)
+    assert_equal false, @dmns.can_afford_exhibit?(@imax, @tj)
+  end
+
+  def test_attend_an_exhibit
+    expected = {
+      @imax => [@gabe]
+    }
+
+    @imax.stubs(:cost).returns(5)
+
+    @dmns.attend_an_exhibit(@imax, @gabe)
+
+    assert_equal 5, @gabe.spending_money
+    assert_equal expected, @dmns.patrons_of_exhibits
+  end
+
+  def test_can_set_default_values_to_interested_patrons
+    expected = {@gems_and_minerals => [], @imax => [], @dead_sea_scrolls => []}
+    assert_equal expected, @dmns.add_default_values_to_interested_patrons
   end
 end
